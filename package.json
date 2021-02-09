@@ -1,10 +1,24 @@
 {
+  "name": "desk-booker",
+  "description": "> ✨ Bootstrapped with Create Snowpack App (CSA).",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "author": "Joshua Byrd",
+  "license": "ISC",
   "scripts": {
     "start": "snowpack dev",
+    "start-node": "snowpack dev --polyfill-node",
     "build": "snowpack build",
+    "build-node": "snowpack build --polyfill-node",
     "test": "echo \"This template does not include a test runner by default.\" && exit 1"
   },
   "devDependencies": {
+    "@snowpack/plugin-svelte": "^3.5.2",
     "snowpack": "^3.0.1"
+  },
+  "dependencies": {
+    "dayjs": "^1.10.4",
+    "pouchdb": "^7.2.2",
+    "svelte": "^3.32.1"
   }
 }
