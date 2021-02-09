@@ -8,9 +8,13 @@
     db.changes({
       since: "now",
       live: true,
-    }).on("change", (data) => {
-      console.log(data);
-    });
+    })
+      .on("change", (data) => {
+        console.log(data);
+      })
+      .on("error", (err) => {
+        console.error(err);
+      });
   });
 
   const db = new PouchDB("https://couchdb.phocks.org/storylab");
@@ -19,7 +23,7 @@
     console.log(info);
   });
 
-  function addTodo(text) {
+  function addDoc(text) {
     var todo = {
       _id: dayjs().format("YYYY-MM-DDTHH:mm:ss:SSSZ"),
       title: text,
@@ -28,26 +32,29 @@
 
     db.put(todo, function callback(err, result) {
       if (!err) {
-        console.log("Successfully posted a todo!");
+        console.log("Successfully posted a doc!");
       }
     });
   }
 
-  function showTodos() {
+  function showDocs() {
     db.allDocs({ include_docs: true, descending: true }, function (err, doc) {
       console.log(doc.rows);
     });
   }
 
-  function handleClick() {
-    addTodo("Hello world!");
+  function handleAddDocClick() {
+    addDoc("This is a doc...");
   }
 
-  showTodos();
+  function handleShowDocsClick() {
+    showDocs();
+  }
 </script>
 
 <div class="App">
-  <button on:click={handleClick}> Click me </button>
+  <button on:click={handleAddDocClick}> Add me </button>
+  <button on:click={handleShowDocsClick}> Show docs </button>
 </div>
 
 <style>
