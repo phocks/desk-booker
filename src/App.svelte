@@ -1,10 +1,10 @@
 <!-- App.svelte -->
 <script>
+  import { onMount, onDestroy } from "svelte";
   import PouchDB from "pouchdb";
   import dayjs from "dayjs";
   import localizedFormat from "dayjs/plugin/localizedFormat";
   dayjs.extend(localizedFormat);
-  import { onMount, onDestroy } from "svelte";
 
   const db = new PouchDB("https://couchdb.phocks.org/storylab");
 
@@ -64,7 +64,6 @@
       })
       .catch((err) => {
         console.error(err);
-        console.log("Probably already have a document for today. Don't worry!");
       });
   }
 
