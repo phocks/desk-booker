@@ -6,10 +6,8 @@
   "author": "Joshua Byrd",
   "license": "ISC",
   "scripts": {
-    "start": "snowpack dev",
-    "start-node": "snowpack dev --polyfill-node",
-    "build": "snowpack build",
-    "build-node": "snowpack build --polyfill-node",
+    "start": "snowpack dev --polyfill-node",
+    "build": "snowpack build --polyfill-node",
     "test": "echo \"This template does not include a test runner by default.\" && exit 1"
   },
   "devDependencies": {
