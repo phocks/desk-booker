@@ -2,12 +2,14 @@
 <script>
   import PouchDB from "pouchdb";
   import dayjs from "dayjs";
+  import localizedFormat from "dayjs/plugin/localizedFormat";
+  dayjs.extend(localizedFormat);
   import { onMount, onDestroy } from "svelte";
 
   const db = new PouchDB("https://couchdb.phocks.org/storylab");
 
   let people = 0;
-  let today = "";
+  let today = dayjs().format("LL");
   let changesListener;
 
   db.info().then(function (info) {
@@ -33,7 +35,6 @@
       .then(function (doc) {
         // okay, doc contains our document
         console.log(doc);
-        today = doc._id;
       })
       .catch(function (err) {
         // oh noes! we got an error
