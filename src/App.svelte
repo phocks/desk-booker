@@ -8,7 +8,7 @@
 
   const db = new PouchDB("https://couchdb.phocks.org/storylab");
 
-  let numberOfPeople = "[loading]";
+  let numberOfPeople = 0;
   let today = dayjs().format("LL");
   let changesListener;
 
@@ -92,11 +92,13 @@
   }
 
   function addPerson() {
+    numberOfPeople++;
+
     db.get(dayjs().format("YYYY-MM-DD"))
       .then(function (doc) {
         // update their age
         doc.people = [...doc.people, "person"];
-        numberOfPeople = doc.people.length;
+
         // put them back
         return db.put(doc);
       })
