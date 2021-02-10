@@ -29,7 +29,7 @@
     db.get(dayjs().format("YYYY-MM-DD"))
       .then(function (doc) {
         // okay, doc contains our document
-        console.log(doc._id);
+        console.log(doc);
         today = doc._id;
       })
       .catch(function (err) {
@@ -76,16 +76,25 @@
     });
   }
 
-  function handleAddDocClick() {
-    addDoc("This is a doc...");
-  }
-
   function handleShowDocsClick() {
     showDocs();
   }
 
   function addPerson() {
-    people++;
+    db.get(dayjs().format("YYYY-MM-DD"))
+      .then(function (doc) {
+        // update their age
+        doc.people = [...doc.people, "person"];
+        // put them back
+        return db.put(doc);
+      })
+      .then(function () {
+        // fetch mittens again
+        return db.get(dayjs().format("YYYY-MM-DD"));
+      })
+      .then(function (doc) {
+        console.log(doc);
+      });
   }
 </script>
 
@@ -93,7 +102,6 @@
   <p>Today is: {today}</p>
   <p>There are {people} people booked for tomorrow.</p>
   <button on:click={addPerson}> Add person </button>
-  <button on:click={handleAddDocClick}> Add me </button>
   <button on:click={handleShowDocsClick}> Show docs </button>
 </div>
 
