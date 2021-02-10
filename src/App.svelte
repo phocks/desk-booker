@@ -2,25 +2,28 @@
 <script>
   import PouchDB from "pouchdb";
   import dayjs from "dayjs";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
 
   const db = new PouchDB("https://couchdb.phocks.org/storylab");
 
   let people = 0;
   let today = "";
+  let changesListener;
 
   db.info().then(function (info) {
     console.log(info);
   });
 
+  // Do once when component mounted
   onMount(async () => {
     // Listen for changes
-    db.changes({
-      since: "now",
-      live: true,
-    })
+    changesListener = db
+      .changes({
+        since: "now",
+        live: true,
+      })
       .on("change", (data) => {
-        console.log(data);
+        console.log("Changes", data);
       })
       .on("error", (err) => {
         console.error(err);
@@ -37,6 +40,11 @@
         console.log("Doc not found. Let's add it!");
         addToday();
       });
+  });
+
+  onDestroy(async () => {
+    // Cancel the listener on hot reload
+    changesListener.cancel();
   });
 
   function addToday() {
@@ -85,7 +93,7 @@
       .then(function (doc) {
         // update their age
         doc.people = [...doc.people, "person"];
-        people = doc.people.length
+        people = doc.people.length;
         // put them back
         return db.put(doc);
       })
