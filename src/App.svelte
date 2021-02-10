@@ -85,6 +85,7 @@
       .then(function (doc) {
         // update their age
         doc.people = [...doc.people, "person"];
+        people = doc.people.length
         // put them back
         return db.put(doc);
       })
