@@ -8,7 +8,7 @@
 
   const db = new PouchDB("https://couchdb.phocks.org/storylab");
 
-  let people = 0;
+  let numberOfPeople = "[loading]";
   let today = dayjs().format("LL");
   let changesListener;
 
@@ -23,9 +23,11 @@
       .changes({
         since: "now",
         live: true,
+        include_docs: true,
       })
       .on("change", (data) => {
         console.log("Changes", data);
+        numberOfPeople = data.doc.people.length;
       })
       .on("error", (err) => {
         console.error(err);
@@ -35,6 +37,7 @@
       .then(function (doc) {
         // okay, doc contains our document
         console.log(doc);
+        numberOfPeople = doc.people.length;
       })
       .catch(function (err) {
         // oh noes! we got an error
@@ -94,12 +97,12 @@
       .then(function (doc) {
         // update their age
         doc.people = [...doc.people, "person"];
-        people = doc.people.length;
+        numberOfPeople = doc.people.length;
         // put them back
         return db.put(doc);
       })
       .then(function () {
-        // fetch mittens again
+        // fetch again
         return db.get(dayjs().format("YYYY-MM-DD"));
       })
       .then(function (doc) {
@@ -110,7 +113,7 @@
 
 <div class="App">
   <p>Today is: {today}</p>
-  <p>There are {people} people booked for tomorrow.</p>
+  <p>There are {numberOfPeople} people booked for tomorrow.</p>
   <button on:click={addPerson}> Add person </button>
   <button on:click={handleShowDocsClick}> Show docs </button>
 </div>
