@@ -9,7 +9,6 @@
   const db = new PouchDB("storylab");
   const remoteDb = new PouchDB("https://couchdb.phocks.org/storylab");
 
-  let numberOfPeople = 0;
   let today = dayjs().format("LL");
   let changesListener;
   let remoteSyncListener;
@@ -28,36 +27,15 @@
       })
       .on("change", (data) => {
         console.log("Changes", data);
-        // numberOfPeople = data.doc.people.length;
+        getToday();
+        getYesterday();
       })
       .on("error", (err) => {
         console.error(err);
       });
 
-    // See if there's a doc for today, otherwise create it
-    db.get(dayjs().format("YYYY-MM-DD"))
-      .then(function (doc) {
-        // okay, doc contains our document
-        // numberOfPeople = doc.people.length;
-        todaysPeople = doc.people;
-      })
-      .catch(function (err) {
-        // oh noes! we got an error
-        console.log("Doc not found. Let's add it!");
-        addToday();
-      });
-
-    // Let's see if yesterday is in there
-    const yesterdayDate = dayjs().subtract(1, "day").format("YYYY-MM-DD");
-
-    db.get(yesterdayDate)
-      .then(function (doc) {
-        yesterdaysPeople = doc.people;
-      })
-      .catch(function (err) {
-        // oh noes! we got an error
-        console.log("Yesterday, all my troubles seemed so far away...");
-      });
+    getToday();
+    getYesterday();
 
     // Sync up with remote database
     remoteSyncListener = db
@@ -86,6 +64,34 @@
     remoteSyncListener.cancel();
   });
 
+  function getToday() {
+    // See if there's a doc for today, otherwise create it
+    db.get(dayjs().format("YYYY-MM-DD"))
+      .then(function (doc) {
+        // okay, doc contains our document
+        todaysPeople = doc.people;
+      })
+      .catch(function (err) {
+        // oh noes! we got an error
+        console.log("Doc not found. Let's add it!");
+        addToday();
+      });
+  }
+
+  function getYesterday() {
+    // Let's see if yesterday is in there
+    const yesterdayDate = dayjs().subtract(1, "day").format("YYYY-MM-DD");
+
+    db.get(yesterdayDate)
+      .then(function (doc) {
+        yesterdaysPeople = doc.people;
+      })
+      .catch(function (err) {
+        // oh noes! we got an error
+        console.log("Yesterday, all my troubles seemed so far away...");
+      });
+  }
+
   function addToday() {
     // A new day a new doc
     const today = {
@@ -102,20 +108,6 @@
       });
   }
 
-  function addDoc(text) {
-    const doc = {
-      _id: dayjs().format("YYYY-MM-DDTHH:mm:ss:SSSZ"),
-      title: text,
-      completed: false,
-    };
-
-    db.put(doc, function callback(err, result) {
-      if (!err) {
-        console.log("Successfully posted a doc!");
-      }
-    });
-  }
-
   function showDocs() {
     db.allDocs({ include_docs: true, descending: true }, function (err, doc) {
       console.log(doc.rows);
@@ -126,8 +118,31 @@
     showDocs();
   }
 
-  function addPerson() {
-    numberOfPeople++;
+  function togglePerson() {
+    if (nameOfPerson === "") {
+      alert("Please enter a name...");
+      return;
+    }
+
+    if (todaysPeople.includes(nameOfPerson)) {
+      db.get(dayjs().format("YYYY-MM-DD"))
+        .then(function (doc) {
+          // update their age
+          doc.people = doc.people.filter((person) => person !== nameOfPerson);
+
+          // put them back
+          return db.put(doc);
+        })
+        .then(function () {
+          // fetch again
+          return db.get(dayjs().format("YYYY-MM-DD"));
+        })
+        .then(function (doc) {
+          console.log("Updated doc", doc);
+        });
+
+      return;
+    }
 
     db.get(dayjs().format("YYYY-MM-DD"))
       .then(function (doc) {
@@ -142,7 +157,7 @@
         return db.get(dayjs().format("YYYY-MM-DD"));
       })
       .then(function (doc) {
-        console.log(doc);
+        console.log("Updated doc", doc);
       });
   }
 </script>
@@ -161,8 +176,10 @@
       <li>{peep}</li>
     {/each}
   </ul>
-  <input bind:value={nameOfPerson} placeholder="Your name" />
-  <button on:click={addPerson}> Book (toggle) </button>
+  <form on:submit|preventDefault={togglePerson}>
+    <input bind:value={nameOfPerson} placeholder="Your name" />
+    <button type="submit"> Book in (toggle) </button>
+  </form>
 </div>
 
 <style>
