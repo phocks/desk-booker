@@ -178,7 +178,7 @@
   </ul>
   <form on:submit|preventDefault={togglePerson}>
     <input bind:value={nameOfPerson} placeholder="Your name" />
-    <button type="submit"> Book in (toggle) </button>
+    <button type="submit"> Book (toggle) </button>
   </form>
 </div>
 
@@ -193,11 +193,11 @@
     background-color: aquamarine;
     border: 2px solid rgb(1, 131, 103);
     border-radius: 3px;
-    padding: 5px 10px;
+    padding: 4px 8px;
   }
 
   .App input {
-    font-size: 17px;
-    padding: 5px 10px;
+    font-size: 16px;
+    padding: 4px 8px;
   }
 </style>
