@@ -6,19 +6,16 @@
   import localizedFormat from "dayjs/plugin/localizedFormat";
   dayjs.extend(localizedFormat);
 
-  const db = new PouchDB("https://couchdb.phocks.org/storylab");
+  const db = new PouchDB("storylab");
+  const remoteDb = new PouchDB("https://couchdb.phocks.org/storylab");
 
   let numberOfPeople = 0;
   let today = dayjs().format("LL");
   let changesListener;
 
-  db.info().then(function (info) {
-    console.log(info);
-  });
-
   // Do once when component mounted
   onMount(async () => {
-    // Listen for changes
+    // Set up out changes listener
     changesListener = db
       .changes({
         since: "now",
@@ -33,10 +30,10 @@
         console.error(err);
       });
 
+    // See if there's a doc for today, otherwise create it
     db.get(dayjs().format("YYYY-MM-DD"))
       .then(function (doc) {
         // okay, doc contains our document
-        console.log(doc);
         numberOfPeople = doc.people.length;
       })
       .catch(function (err) {
@@ -44,8 +41,27 @@
         console.log("Doc not found. Let's add it!");
         addToday();
       });
+
+    // Sync up with remote database
+    db.sync(remoteDb, {
+      live: true,
+      retry: true,
+    })
+      .on("change", function (change) {
+        // yo, something changed!
+      })
+      .on("paused", function (info) {
+        // replication was paused, usually because of a lost connection
+      })
+      .on("active", function (info) {
+        // replication was resumed
+      })
+      .on("error", function (err) {
+        // totally unhandled error (shouldn't happen)
+      });
   });
 
+  // Do this on unMount
   onDestroy(async () => {
     // Cancel the listener on hot reload
     changesListener.cancel();
