@@ -12,6 +12,7 @@
   let numberOfPeople = 0;
   let today = dayjs().format("LL");
   let changesListener;
+  let remoteSyncListener;
 
   // Do once when component mounted
   onMount(async () => {
@@ -43,10 +44,11 @@
       });
 
     // Sync up with remote database
-    db.sync(remoteDb, {
-      live: true,
-      retry: true,
-    })
+    remoteSyncListener = db
+      .sync(remoteDb, {
+        live: true,
+        retry: true,
+      })
       .on("change", function (change) {
         // yo, something changed!
       })
@@ -63,8 +65,9 @@
 
   // Do this on unMount
   onDestroy(async () => {
-    // Cancel the listener on hot reload
+    // Cancel listeners on hot reload
     changesListener.cancel();
+    remoteSyncListener.cancel();
   });
 
   function addToday() {
