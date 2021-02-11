@@ -177,7 +177,7 @@
     {/each}
   </ul>
   <form on:submit|preventDefault={togglePerson}>
-    <input bind:value={nameOfPerson} placeholder="Your name" />
+    <input bind:value={nameOfPerson} placeholder="Your name" required />
     <button type="submit"> Book (toggle) </button>
   </form>
 </div>
