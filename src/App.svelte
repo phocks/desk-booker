@@ -38,7 +38,8 @@
     db.get(dayjs().format("YYYY-MM-DD"))
       .then(function (doc) {
         // okay, doc contains our document
-        numberOfPeople = doc.people.length;
+        // numberOfPeople = doc.people.length;
+        todaysPeople = doc.people;
       })
       .catch(function (err) {
         // oh noes! we got an error
@@ -151,12 +152,17 @@
   <p>{yesterdaysPeople.length} in today.</p>
   <ul>
     {#each yesterdaysPeople as peep, i}
-    <li>{peep}</li>
+      <li>{peep}</li>
     {/each}
   </ul>
-  <p>{numberOfPeople} peeps booked for tomorrow.</p>
+  <p>{todaysPeople.length} peeps booked for tomorrow.</p>
+  <ul>
+    {#each todaysPeople as peep, i}
+      <li>{peep}</li>
+    {/each}
+  </ul>
   <input bind:value={nameOfPerson} placeholder="Your name" />
-  <button on:click={addPerson}> Book me in </button>
+  <button on:click={addPerson}> Book (toggle) </button>
 </div>
 
 <style>
