@@ -1,4 +1,4 @@
-# New Project
+# Desk Booker
 
 > ✨ Bootstrapped with Create Snowpack App (CSA).
 
