@@ -13,6 +13,9 @@
   let today = dayjs().format("LL");
   let changesListener;
   let remoteSyncListener;
+  let nameOfPerson = "";
+  let todaysPeople = [];
+  let yesterdaysPeople = [];
 
   // Do once when component mounted
   onMount(async () => {
@@ -25,7 +28,7 @@
       })
       .on("change", (data) => {
         console.log("Changes", data);
-        numberOfPeople = data.doc.people.length;
+        // numberOfPeople = data.doc.people.length;
       })
       .on("error", (err) => {
         console.error(err);
@@ -41,6 +44,18 @@
         // oh noes! we got an error
         console.log("Doc not found. Let's add it!");
         addToday();
+      });
+
+    // Let's see if yesterday is in there
+    const yesterdayDate = dayjs().subtract(1, "day").format("YYYY-MM-DD");
+
+    db.get(yesterdayDate)
+      .then(function (doc) {
+        yesterdaysPeople = doc.people;
+      })
+      .catch(function (err) {
+        // oh noes! we got an error
+        console.log("Yesterday, all my troubles seemed so far away...");
       });
 
     // Sync up with remote database
@@ -116,7 +131,7 @@
     db.get(dayjs().format("YYYY-MM-DD"))
       .then(function (doc) {
         // update their age
-        doc.people = [...doc.people, "person"];
+        doc.people = [...doc.people, nameOfPerson];
 
         // put them back
         return db.put(doc);
@@ -132,14 +147,34 @@
 </script>
 
 <div class="App">
-  <p>Today is: {today}</p>
-  <p>There are {numberOfPeople} people booked for tomorrow.</p>
-  <button on:click={addPerson}> Add person </button>
-  <button on:click={handleShowDocsClick}> Show docs </button>
+  <p>Today is {today}</p>
+  <p>{yesterdaysPeople.length} in today.</p>
+  <ul>
+    {#each yesterdaysPeople as peep, i}
+    <li>{peep}</li>
+    {/each}
+  </ul>
+  <p>{numberOfPeople} peeps booked for tomorrow.</p>
+  <input bind:value={nameOfPerson} placeholder="Your name" />
+  <button on:click={addPerson}> Book me in </button>
 </div>
 
 <style>
+  .App {
+    font-size: 22px;
+    margin: 15px 20px;
+  }
+
   .App button {
+    font-size: 17px;
     background-color: aquamarine;
+    border: 2px solid rgb(1, 131, 103);
+    border-radius: 3px;
+    padding: 5px 10px;
+  }
+
+  .App input {
+    font-size: 17px;
+    padding: 5px 10px;
   }
 </style>
