@@ -7,7 +7,7 @@
   dayjs.extend(localizedFormat);
 
   const db = new PouchDB("storylab");
-  const remoteDb = new PouchDB("https://couchdb.phocks.org/storylab");
+  const remoteDb = new PouchDB("https://57d31651-59c6-4bc0-809e-4c9927aff456-bluemix.cloudantnosqldb.appdomain.cloud/storylab");
 
   let today = dayjs().format("LL");
   let changesListener;
