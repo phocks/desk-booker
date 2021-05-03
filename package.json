@@ -17,6 +17,6 @@
   "dependencies": {
     "dayjs": "^1.10.4",
     "pouchdb": "^7.2.2",
-    "svelte": "^3.32.1"
+    "svelte": "^3.37.0"
   }
 }
