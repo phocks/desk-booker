@@ -15,7 +15,7 @@
     "snowpack": "^3.0.1"
   },
   "dependencies": {
-    "dayjs": "^1.10.4",
+    "dayjs": "^1.10.5",
     "pouchdb": "^7.2.2",
     "svelte": "^3.32.1"
   }
